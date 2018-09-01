@@ -63,4 +63,40 @@ public class ErrorBuilderTest {
                               .withErrorPrefix(errorPrefix)
                               .build();
     }
+
+
+    @Test
+    @TestControl(startScopes = {ApplicationScoped.class})
+    public void test_forIllegalState_with_cause() throws Throwable {
+        // -- Given --
+        final Throwable cause = new NumberFormatException();
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectCause(new IsEqual<>(cause));
+
+        // -- When --
+        throw coreErrorBuilder.forIllegalState()
+                              .withCause(cause)
+                              .build();
+    }
+
+    @Test
+    @TestControl(startScopes = {ApplicationScoped.class})
+    public void test_forIllegalState_overwritten() throws Throwable {
+        // -- Given --
+        final String module = "newModule";
+        final String code = "newCode";
+        final String errorPrefix = "newErrorPrefix";
+        final String message = "new message";
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(String.format(ErrorBuilder.PATTERN_MESSAGE,
+                                                      module, errorPrefix, code, message));
+
+        // -- When --
+        throw coreErrorBuilder.forIllegalState()
+                              .withNewMessage(message)
+                              .withModule(module)
+                              .withErrorCode(code)
+                              .withErrorPrefix(errorPrefix)
+                              .build();
+    }
 }
